@@ -11,4 +11,22 @@ to deploy them on all those unused
 domains you have laying around or
 subdomains on existing sites. 
 
+See [ai-honeypot.alanwsmith.com](https://ai-honeypot.alanwsmith.com)
+for more details. 
+
+## Notes
+
+This builder is a rust project
+inside the `ai_honeypot_builder` directory. 
+I run it with: `cargo watch -x run`.
+It outputs files into a `ai-honeypots`
+folder inside your `Documents` folder. 
+
+Eventually, it'll make multiple honeypots. 
+For now, it just does a single output
+that's in a `1` directory. 
+
+
+
+
 

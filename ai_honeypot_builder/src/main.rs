@@ -45,11 +45,14 @@ impl Page {
             Self::paragraph(&harvard_chain),
             Self::paragraph(&harvard_chain),
             Self::paragraph(&harvard_chain),
+            Self::paragraph(&harvard_chain),
+            Self::paragraph(&harvard_chain),
         ]
     }
 
     fn paragraph(harvard_chain: &Chain<String>) -> String {
         vec![
+            Self::sentence(&harvard_chain),
             Self::sentence(&harvard_chain),
             Self::sentence(&harvard_chain),
             Self::sentence(&harvard_chain),
@@ -77,6 +80,7 @@ fn build_site(base_dir: &PathBuf, id: usize) -> Result<()> {
     )
     .unwrap();
     let output_root = base_dir.join(format!("{}", id));
+    empty_dir(&output_root)?;
     mkdir_p(&output_root)?;
     let harvard_chain = make_harvard_chain()?;
     let mut pages = vec![
@@ -85,15 +89,23 @@ fn build_site(base_dir: &PathBuf, id: usize) -> Result<()> {
         Page::new(&harvard_chain),
         Page::new(&harvard_chain),
         Page::new(&harvard_chain),
+        Page::new(&harvard_chain),
+        Page::new(&harvard_chain),
+        Page::new(&harvard_chain),
+        Page::new(&harvard_chain),
+        Page::new(&harvard_chain),
+        Page::new(&harvard_chain),
     ];
     pages[0].title = "Home Page".to_string();
     pages[0].absolute_url = "index.html".to_string();
-
+    let links: &Vec<Vec<String>> = &pages
+        .iter()
+        .map(|page| vec![page.title.to_string(), page.absolute_url.to_string()])
+        .collect();
     pages.iter().for_each(|page| {
-        output_page(&output_root, &page, &env);
+        output_page(&output_root, &page, &links, &env);
         ()
     });
-
     Ok(())
 }
 
@@ -116,17 +128,36 @@ fn mkdir_p(dir: &PathBuf) -> Result<()> {
     }
 }
 
-fn output_page(output_root: &PathBuf, page: &Page, env: &Environment) -> Result<()> {
+fn output_page(
+    output_root: &PathBuf,
+    page: &Page,
+    links: &Vec<Vec<String>>,
+    env: &Environment,
+) -> Result<()> {
     let output_path = output_root.join(&page.absolute_url);
     let tmpl = env.get_template("home-page-1").unwrap();
     let output = tmpl
         .render(context!(
             title => page.title,
             paragraphs => page.paragraphs,
+            links => links,
         ))
         .unwrap();
     let dir = output_path.parent().unwrap();
     mkdir_p(&dir.to_path_buf());
     fs::write(output_path, output)?;
+    Ok(())
+}
+
+fn empty_dir(dir: &PathBuf) -> Result<()> {
+    for entry in dir.read_dir()? {
+        let entry = entry?;
+        let path = entry.path();
+        if path.is_dir() {
+            fs::remove_dir_all(path)?;
+        } else {
+            fs::remove_file(path)?;
+        }
+    }
     Ok(())
 }
