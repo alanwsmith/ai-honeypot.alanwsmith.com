@@ -14,6 +14,9 @@ subdomains on existing sites.
 See [ai-honeypot.alanwsmith.com](https://ai-honeypot.alanwsmith.com)
 for more details. 
 
+You can see an [example of the output here](https://keen-kelpie-4940c8.netlify.app/)
+
+
 ## Notes
 
 This builder is a rust project
