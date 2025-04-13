@@ -14,7 +14,7 @@ subdomains on existing sites.
 See [ai-honeypot.alanwsmith.com](https://ai-honeypot.alanwsmith.com)
 for more details. 
 
-You can see an [example of the output here](https://keen-kelpie-4940c8.netlify.app/)
+You can see an [example of the output here](https://ornate-queijadas-8152a2.netlify.app/)
 
 
 ## Notes
