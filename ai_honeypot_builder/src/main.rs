@@ -1,5 +1,6 @@
 #![allow(unused)]
 use anyhow::Result;
+use capitalize::Capitalize;
 use dirs::document_dir;
 use markov::Chain;
 use std::path::PathBuf;
@@ -29,19 +30,10 @@ impl Page {
         title_words.truncate(5);
         let title: String = title_words
             .iter()
-            .map(|word| word.to_string())
+            .map(|word| word.capitalize())
             .collect::<Vec<String>>()
             .join(" ");
-        dbg!(&title);
-        //title_words
-
-        //.replace(".", "");
-        //  .split_whitespace()
-        // .collect::<Vec<&str>>();
-        // dbg!(&title_words);
-
-        //title
-        "asdf".to_string()
+        title
     }
 
     fn paragraphs(harvard_chain: &Chain<String>) -> Vec<String> {
@@ -54,7 +46,13 @@ impl Page {
     }
 
     fn paragraph(harvard_chain: &Chain<String>) -> String {
-        Self::sentence(&harvard_chain)
+        vec![
+            Self::sentence(&harvard_chain),
+            Self::sentence(&harvard_chain),
+            Self::sentence(&harvard_chain),
+            Self::sentence(&harvard_chain),
+        ]
+        .join(" ")
     }
 
     fn sentence(harvard_chain: &Chain<String>) -> String {
