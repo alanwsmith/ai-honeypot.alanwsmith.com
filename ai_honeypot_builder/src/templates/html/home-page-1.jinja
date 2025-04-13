@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>{{ title }}</title>
+</head>
+<body>
+    <h1>{{ title }}</h1>
+    {% for paragraph in paragraphs %}
+    <p>{{ paragraph }}</p>
+    {% endfor %}
+    <h2>Links</h2>
+    <ul>
+    {% for link in links %}
+      <li><a href="/{{ link[1] }}">{{ link[0] }}</a></li>
+    {% endfor %}
+    </ul>
+</body>
+</html>
+
