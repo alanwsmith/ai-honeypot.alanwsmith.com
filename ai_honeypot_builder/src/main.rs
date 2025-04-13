@@ -106,6 +106,9 @@ fn build_site(base_dir: &PathBuf, id: usize) -> Result<()> {
         output_page(&output_root, &page, &links, &env);
         ()
     });
+    let robots_txt = include_str!("templates/robots.txt");
+    let robots_path = output_root.join("robots.txt");
+    fs::write(robots_path, robots_txt)?;
     Ok(())
 }
 
