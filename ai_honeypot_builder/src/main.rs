@@ -3,11 +3,13 @@ use anyhow::Result;
 use capitalize::Capitalize;
 use dirs::document_dir;
 use markov::Chain;
+use minijinja::{Environment, context};
+use std::fs;
 use std::path::PathBuf;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 struct Page {
-    url_key: String,
+    absolute_url: String,
     title: String,
     paragraphs: Vec<String>,
 }
@@ -15,11 +17,12 @@ struct Page {
 impl Page {
     pub fn new(harvard_chain: &Chain<String>) -> Page {
         let title = Self::title(&harvard_chain);
-        let url_key = title.to_lowercase().replace(" ", "-");
+        let mut absolute_url = title.to_lowercase().replace(" ", "-");
+        absolute_url.push_str("/index.html");
         let page = Page {
-            url_key,
-            title,
             paragraphs: Self::paragraphs(&harvard_chain),
+            title,
+            absolute_url,
         };
         page
     }
@@ -67,11 +70,30 @@ fn main() -> Result<()> {
 }
 
 fn build_site(base_dir: &PathBuf, id: usize) -> Result<()> {
+    let mut env = Environment::new();
+    env.add_template(
+        "home-page-1",
+        include_str!("templates/html/home-page-1.jinja"),
+    )
+    .unwrap();
     let output_root = base_dir.join(format!("{}", id));
     mkdir_p(&output_root)?;
     let harvard_chain = make_harvard_chain()?;
-    let p = Page::new(&harvard_chain);
-    dbg!(p);
+    let mut pages = vec![
+        Page::new(&harvard_chain),
+        Page::new(&harvard_chain),
+        Page::new(&harvard_chain),
+        Page::new(&harvard_chain),
+        Page::new(&harvard_chain),
+    ];
+    pages[0].title = "Home Page".to_string();
+    pages[0].absolute_url = "index.html".to_string();
+
+    pages.iter().for_each(|page| {
+        output_page(&output_root, &page, &env);
+        ()
+    });
+
     Ok(())
 }
 
@@ -92,4 +114,19 @@ fn mkdir_p(dir: &PathBuf) -> Result<()> {
         std::fs::create_dir_all(dir)?;
         Ok(())
     }
+}
+
+fn output_page(output_root: &PathBuf, page: &Page, env: &Environment) -> Result<()> {
+    let output_path = output_root.join(&page.absolute_url);
+    let tmpl = env.get_template("home-page-1").unwrap();
+    let output = tmpl
+        .render(context!(
+            title => page.title,
+            paragraphs => page.paragraphs,
+        ))
+        .unwrap();
+    let dir = output_path.parent().unwrap();
+    mkdir_p(&dir.to_path_buf());
+    fs::write(output_path, output)?;
+    Ok(())
 }
