@@ -11,10 +11,10 @@ to deploy them on all those unused
 domains you have laying around or
 subdomains on existing sites. 
 
-See [ai-honeypot.alanwsmith.com](https://ai-honeypot.alanwsmith.com)
+See [ai-honeypot.alanwsmith.com](https://ai-honeypot.alanwsmith.com/)
 for more details. 
 
-You can see an [example of the output here](https://ornate-queijadas-8152a2.netlify.app/)
+You can see an [example of the output here](https://hp-0001.alanwsmith.com/)
 
 
 ## Notes
@@ -28,8 +28,6 @@ folder inside your `Documents` folder.
 Eventually, it'll make multiple honeypots. 
 For now, it just does a single output
 that's in a `1` directory. 
-
-
 
 
 

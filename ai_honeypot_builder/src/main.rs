@@ -17,7 +17,8 @@ struct Page {
 impl Page {
     pub fn new(harvard_chain: &Chain<String>) -> Page {
         let title = Self::title(&harvard_chain);
-        let mut absolute_url = title.to_lowercase().replace(" ", "-");
+        // TODO: Replace any non-letter characters
+        let mut absolute_url = title.to_lowercase().replace(" ", "-").replace(",", "");
         absolute_url.push_str("/index.html");
         let page = Page {
             paragraphs: Self::paragraphs(&harvard_chain),
@@ -67,19 +68,20 @@ impl Page {
 }
 
 fn main() -> Result<()> {
-    let base_dir = document_dir().unwrap().join("ai-honeypots");
-    build_site(&base_dir, 1)?;
+    let pots_dir = document_dir().unwrap().join("ai-honeypots");
+    build_site(&pots_dir, 1)?;
     Ok(())
 }
 
-fn build_site(base_dir: &PathBuf, id: usize) -> Result<()> {
+fn build_site(pots_dir: &PathBuf, id: usize) -> Result<()> {
     let mut env = Environment::new();
     env.add_template(
         "home-page-1",
         include_str!("templates/html/home-page-1.jinja"),
     )
     .unwrap();
-    let output_root = base_dir.join(format!("{}", id));
+    let pot_dir = pots_dir.join(format!("hp-{:0>4}", id));
+    let output_root = pot_dir.join("docs");
     empty_dir(&output_root)?;
     mkdir_p(&output_root)?;
     let harvard_chain = make_harvard_chain()?;
@@ -153,13 +155,17 @@ fn output_page(
 }
 
 fn empty_dir(dir: &PathBuf) -> Result<()> {
-    for entry in dir.read_dir()? {
-        let entry = entry?;
-        let path = entry.path();
-        if path.is_dir() {
-            fs::remove_dir_all(path)?;
-        } else {
-            fs::remove_file(path)?;
+    if let Ok(exists) = dir.try_exists() {
+        if exists {
+            for entry in dir.read_dir()? {
+                let entry = entry?;
+                let path = entry.path();
+                if path.is_dir() {
+                    fs::remove_dir_all(path)?;
+                } else {
+                    fs::remove_file(path)?;
+                }
+            }
         }
     }
     Ok(())
